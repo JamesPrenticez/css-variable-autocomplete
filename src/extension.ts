@@ -1,26 +1,71 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
+import * as fs from 'fs';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "css-variable-autocomplete" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('css-variable-autocomplete.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from css-variable-autocomplete!');
-	});
-
-	context.subscriptions.push(disposable);
+function extractCSSVariablesFromFile(filePath: string): string[] {
+  try {
+    const content = fs.readFileSync(filePath, 'utf-8');
+    const regex = /--[\w-]+(?=:)/g;
+    const matches = content.match(regex);
+    return matches || [];
+  } catch (e) {
+    console.error(`Failed to read ${filePath}`, e);
+    return [];
+  }
 }
 
-// This method is called when your extension is deactivated
+async function findAllCSSVariables(): Promise<string[]> {
+  const variables: Set<string> = new Set();
+  const cssFiles = await vscode.workspace.findFiles('**/*.css', '**/node_modules/**', 100);
+
+  for (const file of cssFiles) {
+    const absPath = file.fsPath;
+    const vars = extractCSSVariablesFromFile(absPath);
+    vars.forEach(v => variables.add(v));
+  }
+
+  return Array.from(variables);
+}
+
+// MAIN=======================
+let cachedVariables: string[] = [];
+
+export async function activate(context: vscode.ExtensionContext) {
+  console.log("🔥 CSS Variables Extension Activated");
+
+  cachedVariables = await findAllCSSVariables();
+  console.log("📦 Loaded CSS Variables:", cachedVariables);
+
+  const provider = vscode.languages.registerCompletionItemProvider(
+    'typescriptreact',
+    {
+      provideCompletionItems(document, position) {
+        const line = document.lineAt(position);
+        const text = line.text.substring(0, position.character);
+
+        const varPrefixMatch = /--[\w-]*$/.exec(text);
+        if (!varPrefixMatch) return;
+
+        const startChar = position.character - varPrefixMatch[0].length;
+        const range = new vscode.Range(
+          position.line,
+          startChar,
+          position.line,
+          position.character
+        );
+
+        return cachedVariables.map(variable => {
+          const item = new vscode.CompletionItem(variable, vscode.CompletionItemKind.Variable);
+          item.insertText = variable; // only insert --color-primary
+          item.detail = 'CSS Variable';
+          item.range = range; // replace just the --xyz being typed
+          return item;
+        });
+      }
+    },
+    '-', '('
+  );
+
+  context.subscriptions.push(provider);
+}
+
 export function deactivate() {}
