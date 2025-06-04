@@ -1,0 +1,41 @@
+.theme-purple {
+  --color-primary-opacity: 167, 79, 249;            /* #a74ff9 */
+  --color-secondary-opacity: 192, 128, 251;         /* #744Dff */
+  --color-accent-opacity: 255, 107, 235;            /* #ff6beb */
+
+  --color-action-opacity: 192, 128, 251;            /* #c080fb */
+  --color-action-hover-opacity: 116, 77, 255;       /* #744Dff */
+  --color-focus-opacity: 167, 79, 249;              /* #a74ff9 */
+  --color-disabled-opacity: 153, 153, 153;          /* #999999 */
+
+  --color-border-opacity: 167, 79, 249;             /* #a74ff9 */
+  --color-border-accent-opacity: 192, 128, 251;     /* #c080fb */
+
+  --color-text-opacity: 248, 248, 255;              /* #F8F8FF */
+  --color-text-subtle-opacity: 118, 118, 118;       /* #767676 */
+  --color-text-accent-opacity: 192, 128, 251;       /* #c080fb */
+
+  --color-background-opacity: 21, 21, 21;           /* #151515 */
+  --color-background-subtle-opacity: 118, 118, 118; /* #767676 */
+}
+
+.theme-purple {
+  --color-primary: rgb(var(--color-primary-opacity));
+  --color-secondary: rgb(var(--color-secondary-opacity));
+  --color-accent: rgb(var(--color-accent-opacity));
+
+  --color-action: rgb(var(--color-action-opacity));
+  --color-action-hover: rgb(var(--color-action-hover-opacity));
+  --color-focus: rgb(var(--color-focus-opacity));
+  --color-disabled: rgb(var(--color-disabled-opacity));
+
+  --color-border: rgb(var(--color-border-opacity));
+  --color-border-accent: rgb(var(--color-border-accent-opacity));
+
+  --color-text: rgb(var(--color-text-opacity));
+  --color-text-subtle: rgb(var(--color-text-subtle-opacity));
+  --color-text-accent: rgb(var(--color-text-accent-opacity));
+
+  --color-background: rgb(var(--color-background-opacity));
+  --color-background-subtle: rgb(var(--color-background-subtle-opacity));
+}
